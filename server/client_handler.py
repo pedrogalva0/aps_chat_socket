@@ -1,5 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import logging
-from utils.messages import Message
+from aps_chat_socket.utils.messages import Message
+
 
 class ClientHandler:
     def _init_(self, client_socket, address, server):

@@ -1,9 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import tkinter as tk
-from client.network import ClientNetwork
-from utils.messages import Message
+from aps_chat_socket.utils.messages import Message
+
+
 
 class ChatGUI:
-    def _init_(self):
+    def __init__(self):  # Corrigido para __init__
         self.rede = ClientNetwork()
         self.rede.connect()
 
@@ -32,4 +37,4 @@ class ChatGUI:
 
     def exibir_mensagem(self, json_str):
         msg = Message.from_json(json_str)
-        self.txt_area.insert(tk.END, f\"{msg.timestamp} - {msg.remetente}: {msg.conteudo}\\n\")
+        self.txt_area.insert(tk.END, f"{msg.timestamp} - {msg.remetente}: {msg.conteudo}\n")
