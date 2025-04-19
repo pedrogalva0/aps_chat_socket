@@ -9,7 +9,7 @@ from server.client_handler import ClientHandler
 from server.storage import StorageManager
 
 class Server:
-    def _init_(self, host='localhost', port=12345):
+    def __init__(self, host='localhost', port=12345):
         self.host = host
         self.port = port
         self.clientes = []
@@ -17,15 +17,21 @@ class Server:
         self.storage = StorageManager()
 
     def start(self):
-        self.server_socket.bind((self.host, self.port))
-        self.server_socket.listen()
-        logging.info(f"Servidor escutando em {self.host}:{self.port}...")
-        while True:
-            client_socket, addr = self.server_socket.accept()
-            handler = ClientHandler(client_socket, addr, self)
-            self.clientes.append(handler)
-            thread = threading.Thread(target=handler.run)
-            thread.start()
+        try:
+            self.server_socket.bind((self.host, self.port))
+            self.server_socket.listen()
+            logging.info(f"Servidor escutando em {self.host}:{self.port}...")
+
+            while True:
+                client_socket, addr = self.server_socket.accept()
+                logging.info(f"Novo cliente conectado: {addr}")
+                handler = ClientHandler(client_socket, addr, self)
+                self.clientes.append(handler)
+                thread = threading.Thread(target=handler.run)
+                thread.start()
+
+        except Exception as e:
+            logging.error(f"Erro ao iniciar o servidor: {e}")
 
     def broadcast(self, mensagem, remetente):
         for cliente in self.clientes:
@@ -35,7 +41,8 @@ class Server:
     def remover_cliente(self, handler):
         self.clientes.remove(handler)
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     servidor = Server()
     servidor.start()
+

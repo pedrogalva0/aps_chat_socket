@@ -2,7 +2,7 @@ import json
 import datetime
 
 class Message:
-    def _init_(self, remetente, conteudo, timestamp=None):
+    def __init__(self, remetente, conteudo, timestamp=None):  # Corrigido para __init__
         self.remetente = remetente
         self.conteudo = conteudo
         self.timestamp = timestamp or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

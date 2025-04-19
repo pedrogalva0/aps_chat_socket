@@ -7,7 +7,7 @@ from aps_chat_socket.utils.messages import Message
 
 
 class ClientHandler:
-    def _init_(self, client_socket, address, server):
+    def __init__(self, client_socket, address, server):  #alterado de _init_ para __init__(eita como e eficiente)
         self.client_socket = client_socket
         self.address = address
         self.server = server
@@ -23,7 +23,8 @@ class ClientHandler:
                 message = Message.from_json(msg)
                 self.server.storage.salvar_mensagem(message.remetente, message.conteudo, message.timestamp)
                 self.server.broadcast(msg, self)
-            except:
+            except Exception as e:
+                logging.error(f"Erro ao processar mensagem: {e}")
                 break
         self.client_socket.close()
         self.server.remover_cliente(self)
