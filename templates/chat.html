@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 400px;
+        }
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="messages"></div>
+        <form id="form">
+            <input id="input" autocomplete="off" placeholder="Digite sua mensagem..." />
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <!-- Aqui o script correto, sem <script> duplicado -->
+    <script>
+        window.onload = () => {
+            const ws = new WebSocket("ws://localhost:6789");
+            const messages = document.getElementById("messages");
+            const form = document.getElementById("form");
+            const input = document.getElementById("input");
+            const user = prompt("Digite seu nome:");
+
+            ws.onopen = () => {
+                console.log("Conectado ao servidor WebSocket.");
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                const item = document.createElement("div");
+                item.textContent = `${msg.user}: ${msg.text}`;
+                messages.appendChild(item);
+                messages.scrollTop = messages.scrollHeight;
+            };
+
+            ws.onerror = (err) => {
+                console.error("Erro no WebSocket:", err);
+            };
+
+            ws.onclose = () => {
+                console.warn("Conexão WebSocket encerrada.");
+            };
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const message = {
+                    user: user,
+                    text: input.value
+                };
+
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify(message));
+                } else {
+                    alert("Conexão com o servidor perdida.");
+                }
+
+                input.value = "";
+            });
+        };
+    </script>
+</body>
+</html>
